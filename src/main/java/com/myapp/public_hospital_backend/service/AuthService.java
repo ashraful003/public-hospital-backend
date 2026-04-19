@@ -14,6 +14,7 @@ import java.time.LocalDate;
 @Service
 @RequiredArgsConstructor
 public class AuthService {
+
     private final UserRepository repo;
     private final JwtUtils jwt;
     private final PasswordEncoder encoder;
@@ -48,7 +49,6 @@ public class AuthService {
         }
         user.setPassword(encoder.encode(req.getPassword()));
         user.setWeight(req.getWeight());
-        user.setImageUrl(req.getImageUrl());
         user.setInstitute(req.getInstitute());
         user.setDegree(req.getDegree());
         user.setLicense(req.getLicense());
@@ -67,7 +67,8 @@ public class AuthService {
         return new AuthResponse(
                 jwt.generateAccessToken(user.getEmail()),
                 jwt.generateRefreshToken(user.getEmail()),
-                "User Registered Successfully"
+                "User Registered Successfully",
+                user.getRole().name()
         );
     }
 
@@ -80,7 +81,8 @@ public class AuthService {
         return new AuthResponse(
                 jwt.generateAccessToken(user.getEmail()),
                 jwt.generateRefreshToken(user.getEmail()),
-                "Login Successful"
+                "Login Successful",
+                user.getRole().name()
         );
     }
 
@@ -88,10 +90,12 @@ public class AuthService {
         String email = jwt.extractEmail(req.getRefreshToken());
         repo.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
+        User user = repo.findByEmail(email).get();
         return new AuthResponse(
                 jwt.generateAccessToken(email),
                 jwt.generateRefreshToken(email),
-                "Token refreshed"
+                "Token refreshed",
+                user.getRole().name()
         );
     }
 }
