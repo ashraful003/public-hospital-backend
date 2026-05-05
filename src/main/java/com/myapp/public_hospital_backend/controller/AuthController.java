@@ -1,15 +1,18 @@
 package com.myapp.public_hospital_backend.controller;
 
 import com.myapp.public_hospital_backend.dto.*;
+import com.myapp.public_hospital_backend.model.Attendance;
 import com.myapp.public_hospital_backend.model.BloodProfile;
 import com.myapp.public_hospital_backend.model.User;
 import com.myapp.public_hospital_backend.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -22,6 +25,7 @@ public class AuthController {
     private final PasswordService passwordService;
     private final UserService userService;
     private final BloodProfileService service;
+    private final AttendanceService attendanceService;
 
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> register(@RequestBody RegisterRequest request) {
@@ -224,5 +228,130 @@ public class AuthController {
             @PathVariable String email,
             @RequestBody BloodProfile profile) {
         return ResponseEntity.ok(service.update(email, profile));
+    }
+
+    @GetMapping("blood-list")
+    public ResponseEntity<List<BloodProfile>> getAll() {
+        return ResponseEntity.ok(service.getAll());
+    }
+
+    @GetMapping("/all-doctor")
+    public List<User> getAllDoctors() {
+        return userService.getAllDoctors();
+    }
+
+    @GetMapping("/active-doctor")
+    public List<User> getActiveDoctors() {
+        return userService.getActiveDoctors();
+    }
+
+    @GetMapping("/all-assistant")
+    public List<User> getAllDoctorsAssistant() {
+        return userService.getAllDoctorsAssistant();
+    }
+
+    @GetMapping("/active-assistant")
+    public List<User> getActiveDoctorsAssistant() {
+        return userService.getActiveDoctorsAssistant();
+    }
+
+    @GetMapping("/all-nurses")
+    public List<User> getAllNurses() {
+        return userService.getAllNurses();
+    }
+
+    @GetMapping("/active-nurses")
+    public List<User> getActiveNurses() {
+        return userService.getActiveNurses();
+    }
+
+    @GetMapping("/all-accountants")
+    public List<User> getAllAccountants() {
+        return userService.getAllAccountants();
+    }
+
+    @GetMapping("/active-accountants")
+    public List<User> getActiveAccountants() {
+        return userService.getActiveAccountants();
+    }
+
+    @GetMapping("/all-pharmacists")
+    public List<User> getAllPharmacist() {
+        return userService.getAllPharmacist();
+    }
+
+    @GetMapping("/active-pharmacists")
+    public List<User> getActivePharmacist() {
+        return userService.getActivePharmacist();
+    }
+
+    @GetMapping("/all-receptionists")
+    public List<User> getAllReceptionist() {
+        return userService.getAllReceptionist();
+    }
+
+    @GetMapping("/active-receptionists")
+    public List<User> getActiveReceptionist() {
+        return userService.getActiveReceptionist();
+    }
+
+    @GetMapping("/all-drivers")
+    public List<User> getAllDriver() {
+        return userService.getAllDriver();
+    }
+
+    @GetMapping("/active-drivers")
+    public List<User> getActiveDriver() {
+        return userService.getActiveDriver();
+    }
+
+    @GetMapping("all-cleaners")
+    public List<User> getAllCleaner() {
+        return userService.getAllCleaner();
+    }
+
+    @GetMapping("active-cleaners")
+    public List<User> getActiveCleaners() {
+        return userService.getActiveCleaner();
+    }
+
+    @GetMapping("/user/{nationalId}")
+    public ResponseEntity<?> getUser(@PathVariable String nationalId) {
+        try {
+            User user = attendanceService.findUser(nationalId);
+            return ResponseEntity.ok(user);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/check-in/{nationalId}")
+    public ResponseEntity<?> checkIn(@PathVariable String nationalId) {
+        try {
+            String msg = attendanceService.checkIn(nationalId);
+            return ResponseEntity.ok(Map.of("message", msg));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/check-out/{nationalId}")
+    public ResponseEntity<?> checkOut(@PathVariable String nationalId) {
+        try {
+            String msg = attendanceService.checkOut(nationalId);
+            return ResponseEntity.ok(Map.of("message", msg));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        }
+    }
+
+    @GetMapping("/all-attendance")
+    public ResponseEntity<?> getAllAttendance() {
+        return ResponseEntity.ok(attendanceService.getAllAttendance());
+    }
+
+    @GetMapping("/my/{nationalId}")
+    public List<Attendance> getMyAttendance(@PathVariable String nationalId) {
+        return attendanceService.getMyAttendance(nationalId);
     }
 }
