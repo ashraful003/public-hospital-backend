@@ -2,10 +2,14 @@ package com.myapp.public_hospital_backend.service;
 
 import com.myapp.public_hospital_backend.dto.UserResponse;
 import com.myapp.public_hospital_backend.model.User;
+import com.myapp.public_hospital_backend.model.UserRole;
 import com.myapp.public_hospital_backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -48,4 +52,67 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    public List<User> getAllDoctors() {
+        return userRepository.findByRole(UserRole.DOCTOR);
+    }
+
+    public List<User> getActiveDoctors() {
+        return userRepository.findByRoleAndIsActive(UserRole.DOCTOR, true);
+    }
+
+    public List<User> getAllDoctorsAssistant() {
+        return userRepository.findByRole(UserRole.DOCTOR_ASSISTANT);
+    }
+
+    public List<User> getActiveDoctorsAssistant() {
+        return userRepository.findByRoleAndIsActive(UserRole.DOCTOR_ASSISTANT, true);
+    }
+
+    public List<User> getAllNurses() {
+        return userRepository.findByRole(UserRole.NURSE);
+    }
+
+    public List<User> getActiveNurses() {
+        return userRepository.findByRoleAndIsActive(UserRole.NURSE, true);
+    }
+
+    public List<User> getAllAccountants() {
+        return userRepository.findByRole(UserRole.ACCOUNTANT);
+    }
+
+    public List<User> getActiveAccountants() {
+        return userRepository.findByRoleAndIsActive(UserRole.ACCOUNTANT, true);
+    }
+
+    public List<User> getAllPharmacist() {
+        return userRepository.findByRole(UserRole.PHARMACIST);
+    }
+
+    public List<User> getActivePharmacist() {
+        return userRepository.findByRoleAndIsActive(UserRole.PHARMACIST, true);
+    }
+
+    public List<User> getAllReceptionist() {
+        return userRepository.findByRole(UserRole.RECEPTIONIST);
+    }
+
+    public List<User> getActiveReceptionist() {
+        return userRepository.findByRoleAndIsActive(UserRole.RECEPTIONIST, true);
+    }
+
+    public List<User> getAllDriver() {
+        return userRepository.findByRole(UserRole.DRIVER);
+    }
+
+    public List<User> getActiveDriver() {
+        return userRepository.findByRoleAndIsActive(UserRole.DRIVER, true);
+    }
+
+    public List<User> getAllCleaner() {
+        return userRepository.findByRole(UserRole.CLEANER);
+    }
+
+    public List<User> getActiveCleaner() {
+        return userRepository.findByRoleAndIsActive(UserRole.CLEANER, true);
+    }
 }

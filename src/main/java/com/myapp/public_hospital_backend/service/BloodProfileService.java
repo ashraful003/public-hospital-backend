@@ -5,6 +5,7 @@ import com.myapp.public_hospital_backend.repository.BloodProfileRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -27,5 +28,8 @@ public class BloodProfileService {
         existing.setLastDonateDate(updated.getLastDonateDate());
 
         return repository.save(existing);
+    }
+    public List<BloodProfile> getAll() {
+        return repository.findAll();
     }
 }
