@@ -3,6 +3,7 @@ package com.myapp.public_hospital_backend.controller;
 import com.myapp.public_hospital_backend.dto.*;
 import com.myapp.public_hospital_backend.model.Attendance;
 import com.myapp.public_hospital_backend.model.BloodProfile;
+import com.myapp.public_hospital_backend.model.Medicine;
 import com.myapp.public_hospital_backend.model.User;
 import com.myapp.public_hospital_backend.service.*;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,7 @@ public class AuthController {
     private final UserService userService;
     private final BloodProfileService service;
     private final AttendanceService attendanceService;
+    private final MedicineService medicineService;
 
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> register(@RequestBody RegisterRequest request) {
@@ -353,5 +355,65 @@ public class AuthController {
     @GetMapping("/my/{nationalId}")
     public List<Attendance> getMyAttendance(@PathVariable String nationalId) {
         return attendanceService.getMyAttendance(nationalId);
+    }
+
+    @PostMapping("/register-pharmaceutical")
+    public ResponseEntity<?> pharmaceuticalRegister(@RequestBody RegisterRequest request) {
+        try {
+            AuthResponse response = authService.pharmaceuticalRegister(request);
+            return ResponseEntity.ok(Map.of(
+                    "message", response.getMessage(),
+                    "accessToken", response.getAccessToken(),
+                    "refreshToken", response.getRefreshToken(),
+                    "role", response.getRole()
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("message", e.getMessage()));
+        }
+    }
+
+    @GetMapping("all-pharmaceuticals")
+    public List<User> getAllPharmaceutical() {
+        return userService.getAllPharmaceutical();
+    }
+
+    @DeleteMapping("/delete-pharmaceutical/{id}")
+    public ResponseEntity<?> deletePharmaceutical(@PathVariable Long id) {
+        userService.deletePharmaceutical(id);
+        return ResponseEntity.ok("Pharmaceutical deleted successfully");
+    }
+
+    @PostMapping("/add-medicine")
+    public ResponseEntity<?> addMedicine(@RequestBody Medicine medicine) {
+        Medicine savedMedicine = medicineService.addMedicine(medicine);
+        return ResponseEntity.ok("Medicine added successfully");
+    }
+
+    @GetMapping("/all-my-medicine")
+    public ResponseEntity<List<Medicine>> getMyMedicines(
+            @RequestParam String name) {
+        return ResponseEntity.ok(
+                medicineService.getMyMedicines(name)
+        );
+    }
+
+    @GetMapping("/all-medicine")
+    public ResponseEntity<List<Medicine>> getAllMedicines() {
+        return ResponseEntity.ok(medicineService.getAllMedicines());
+    }
+
+    @PutMapping("/update/medicine/{id}")
+    public ResponseEntity<?> updateMedicine(
+            @PathVariable Long id,
+            @RequestBody Medicine medicine) {
+        medicineService.updateMedicine(id, medicine);
+        return ResponseEntity.ok("Medicine updated successfully");
+    }
+
+    @DeleteMapping("/delete/medicine/{id}")
+    public ResponseEntity<?> deleteMedicine(@PathVariable Long id) {
+        medicineService.deleteMedicine(id);
+        return ResponseEntity.ok("Deleted successfully");
     }
 }

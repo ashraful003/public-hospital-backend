@@ -5,7 +5,6 @@ import com.myapp.public_hospital_backend.model.User;
 import com.myapp.public_hospital_backend.model.UserRole;
 import com.myapp.public_hospital_backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -14,19 +13,15 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class UserService {
-
     private final UserRepository userRepository;
 
     public User getCurrentUser() {
         var authentication = SecurityContextHolder.getContext().getAuthentication();
-
         if (authentication == null || !authentication.isAuthenticated()
                 || authentication.getPrincipal().equals("anonymousUser")) {
             throw new RuntimeException("User not authenticated");
         }
-
         String email = authentication.getName();
-
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
     }
@@ -114,5 +109,18 @@ public class UserService {
 
     public List<User> getActiveCleaner() {
         return userRepository.findByRoleAndIsActive(UserRole.CLEANER, true);
+    }
+
+    public List<User> getAllPharmaceutical() {
+        return userRepository.findByRole(UserRole.PHARMACEUTICAL);
+    }
+
+    public void deletePharmaceutical(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Pharmaceutical not found"));
+        if (user.getRole() != UserRole.PHARMACEUTICAL) {
+            throw new RuntimeException("User is not a pharmaceutical");
+        }
+        userRepository.delete(user);
     }
 }
