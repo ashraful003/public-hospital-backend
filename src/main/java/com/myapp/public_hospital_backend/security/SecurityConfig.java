@@ -30,6 +30,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/employee/**").hasAnyRole("DOCTOR", "DOCTOR ASSISTANT", "NURSE", "CLEANER", "ADMIN")
                         .requestMatchers("/api/patient/**").hasAnyRole("PATIENT", "ADMIN")
+                        .requestMatchers("/api/pharmaceutical/**").hasAnyRole("ADMIN", "PHARMACEUTICAL")
                         .anyRequest().authenticated()
                 );
 

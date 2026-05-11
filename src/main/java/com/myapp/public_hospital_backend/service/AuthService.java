@@ -10,6 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -95,6 +96,42 @@ public class AuthService {
                 jwt.generateAccessToken(email),
                 jwt.generateRefreshToken(email),
                 "Token refreshed",
+                user.getRole().name()
+        );
+    }
+
+    public AuthResponse pharmaceuticalRegister(RegisterRequest req) {
+        if (req.getEmail() == null || req.getPassword() == null) {
+            throw new RuntimeException("Email and password required");
+        }
+        if (repo.findByEmail(req.getEmail()).isPresent()) {
+            throw new RuntimeException("Email already exists");
+        }
+        if (repo.findByNationalId(req.getNationalId()).isPresent()) {
+            throw new RuntimeException("National ID already exists");
+        }
+        User user = new User();
+        user.setNationalId(req.getNationalId());
+        user.setName(req.getName());
+        user.setEmail(req.getEmail());
+        user.setPhone(req.getPhone());
+        user.setAddress(req.getAddress());
+        if (req.getDob() != null && !req.getDob().isEmpty()) {
+            try {
+                user.setDob(LocalDate.parse(req.getDob()));
+            } catch (Exception e) {
+                throw new RuntimeException("Invalid DOB format. Use yyyy-MM-dd");
+            }
+        }
+        user.setPassword(encoder.encode(req.getPassword()));
+        user.setLicense(req.getLicense());
+        user.setIsActive(req.getIsActive() != null ? req.getIsActive() : true);
+        user.setRole(UserRole.PHARMACEUTICAL);
+        repo.save(user);
+        return new AuthResponse(
+                jwt.generateAccessToken(user.getEmail()),
+                jwt.generateRefreshToken(user.getEmail()),
+                "Pharmaceutical Registration Successful",
                 user.getRole().name()
         );
     }
