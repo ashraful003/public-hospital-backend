@@ -11,6 +11,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @EnableMethodSecurity
 public class SecurityConfig {
+
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -18,6 +19,7 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
         http
                 .csrf(csrf -> csrf.disable())
                 .formLogin(form -> form.disable())
@@ -28,9 +30,12 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**", "/error").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/api/employee/**").hasAnyRole("DOCTOR", "DOCTOR ASSISTANT", "NURSE", "CLEANER", "ADMIN")
-                        .requestMatchers("/api/patient/**").hasAnyRole("PATIENT", "ADMIN")
-                        .requestMatchers("/api/pharmaceutical/**").hasAnyRole("ADMIN", "PHARMACEUTICAL")
+                        .requestMatchers("/api/employee/**")
+                        .hasAnyRole("DOCTOR", "DOCTOR_ASSISTANT", "NURSE", "CLEANER", "ADMIN")
+                        .requestMatchers("/api/patient/**")
+                        .hasAnyRole("PATIENT", "ADMIN", "DOCTOR")
+                        .requestMatchers("/api/pharmaceutical/**")
+                        .hasAnyRole("PHARMACEUTICAL", "ADMIN")
                         .anyRequest().authenticated()
                 );
 

@@ -1,7 +1,16 @@
 package com.myapp.public_hospital_backend.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDate;
 
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserProfileResponse {
 
     private String nationalId;
@@ -12,7 +21,6 @@ public class UserProfileResponse {
     private LocalDate dob;
     private String weight;
     private String imageUrl;
-    private String imageBase64;
     private String institute;
     private String degree;
     private String license;
@@ -81,14 +89,6 @@ public class UserProfileResponse {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
-    }
-
-    public String getImageBase64() {
-        return imageBase64;
-    }
-
-    public void setImageBase64(String imageBase64) {
-        this.imageBase64 = imageBase64;
     }
 
     public String getInstitute() {
