@@ -1,25 +1,23 @@
 package com.myapp.public_hospital_backend.controller;
 
 import com.myapp.public_hospital_backend.dto.*;
-import com.myapp.public_hospital_backend.model.Attendance;
-import com.myapp.public_hospital_backend.model.BloodProfile;
-import com.myapp.public_hospital_backend.model.Medicine;
-import com.myapp.public_hospital_backend.model.User;
+import com.myapp.public_hospital_backend.model.*;
 import com.myapp.public_hospital_backend.service.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
 @CrossOrigin(origins = "*")
-@RequiredArgsConstructor
 public class AuthController {
     private final AuthService authService;
     private final OtpService otpService;
@@ -28,6 +26,33 @@ public class AuthController {
     private final BloodProfileService service;
     private final AttendanceService attendanceService;
     private final MedicineService medicineService;
+    private final AdviceService advice;
+    private final NextMeetService nextMeet;
+    private final TestService testService;
+    private final DurationService durationService;
+    private final DoseService doseService;
+    private final PrescriptionService prescription;
+    private final MedicineTypeService medicineType;
+    private final DoseTimeService doseTime;
+
+    public AuthController(AuthService authService, OtpService otpService, PasswordService passwordService, UserService userService, BloodProfileService service, AttendanceService attendanceService, MedicineService medicineService, AdviceService advice, NextMeetService nextMeet, TestService testService, DurationService durationService, DoseService doseService, PrescriptionService prescription, MedicineTypeService medicineType, DoseTimeService doseTime) {
+        this.authService = authService;
+        this.otpService = otpService;
+        this.passwordService = passwordService;
+        this.userService = userService;
+        this.service = service;
+        this.attendanceService = attendanceService;
+        this.medicineService = medicineService;
+        this.advice = advice;
+        this.nextMeet = nextMeet;
+        this.testService = testService;
+        this.durationService = durationService;
+        this.doseService = doseService;
+        this.prescription = prescription;
+        this.medicineType = medicineType;
+        this.doseTime = doseTime;
+    }
+
 
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> register(@RequestBody RegisterRequest request) {
@@ -415,5 +440,296 @@ public class AuthController {
     public ResponseEntity<?> deleteMedicine(@PathVariable Long id) {
         medicineService.deleteMedicine(id);
         return ResponseEntity.ok("Deleted successfully");
+    }
+
+    @GetMapping("/users/{nationalId}")
+    public ResponseEntity<?> getUserByNationalId(
+            @PathVariable String nationalId) {
+        try {
+            UserProfileResponse response = userService.getUserByNationalId(nationalId);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(
+                    Map.of(
+                            "message",
+                            e.getMessage()
+                    )
+            );
+        }
+    }
+
+    @PostMapping("/add-advice")
+    public Map<String, String> addAdvice(
+            @RequestBody AdviceRequest request
+    ) {
+        advice.createAdvice(request);
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Advice added successfully");
+        return response;
+    }
+
+    @GetMapping("/doctor/advice/{nationalId}")
+    public List<Advice> getByDoctor(
+            @PathVariable String nationalId
+    ) {
+        return advice.getByNationalId(nationalId);
+    }
+
+    @PutMapping("/update-advice/{id}")
+    public Map<String, String> updateAdvice(
+            @PathVariable Long id,
+            @RequestBody AdviceRequest request
+    ) {
+        advice.updateAdvice(id, request);
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Advice updated successfully");
+        return response;
+    }
+
+    @DeleteMapping("/delete-advice/{id}")
+    public Map<String, String> deleteAdvice(
+            @PathVariable Long id
+    ) {
+        advice.deleteAdvice(id);
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Advice deleted successfully");
+        return response;
+    }
+
+    @PostMapping("/create-meet-time")
+    public Map<String, String> createMeetTime(@RequestBody NextMeetRequest request) {
+        nextMeet.create(request);
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Meet time created successfully");
+        return response;
+    }
+
+    @GetMapping("/meet-time/{nationalId}")
+    public List<NextMeet> getByNationalId(@PathVariable String nationalId) {
+        return nextMeet.getByNationalId(nationalId);
+    }
+
+    @PutMapping("/update-meet-time/{id}")
+    public Map<String, String> updateMeetTime(
+            @PathVariable Long id,
+            @RequestBody NextMeetRequest request
+    ) {
+        nextMeet.update(id, request);
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Meet time updated successfully");
+        return response;
+    }
+
+    @DeleteMapping("/delete-meet-time/{id}")
+    public Map<String, String> deleteMeetTime(@PathVariable Long id) {
+        nextMeet.delete(id);
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Meet time deleted successfully");
+        return response;
+    }
+
+    @PostMapping("/add-test")
+    public ResponseEntity<?> addTest(@RequestBody TestRequest request) {
+        try {
+            testService.addTest(request);
+            return ResponseEntity.ok("Test added successfully");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/all-test")
+    public ResponseEntity<?> getAllTest() {
+        return ResponseEntity.ok(testService.getAllTest());
+    }
+
+    @GetMapping("/test/{id}")
+    public ResponseEntity<?> getById(
+            @PathVariable Long id
+    ) {
+        return ResponseEntity.ok(testService.getById(id));
+    }
+
+    @GetMapping("/center/test/{name}")
+    public ResponseEntity<?> getByDiagnosticCenter(
+            @PathVariable String name
+    ) {
+        return ResponseEntity.ok(
+                testService.getByDiagnosticCenter(name)
+        );
+    }
+
+    @PutMapping("/update-test/{id}")
+    public ResponseEntity<?> updateTest(
+            @PathVariable Long id,
+            @RequestBody TestRequest request
+    ) {
+        testService.updateTest(id, request);
+        return ResponseEntity.ok("Test updated successfully");
+    }
+
+    @DeleteMapping("/delete-test/{id}")
+    public ResponseEntity<?> deleteTest(
+            @PathVariable Long id
+    ) {
+        testService.deleteTest(id);
+        return ResponseEntity.ok("Test deleted successfully");
+    }
+
+    @PostMapping("/add-duration")
+    public ResponseEntity<?> addDuration(
+            @RequestBody DurationRequest request
+    ) {
+        try {
+            durationService.createDuration(request);
+            return ResponseEntity.ok(
+                    Map.of(
+                            "message",
+                            "Duration added successfully"
+                    )
+            );
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(
+                    Map.of(
+                            "message",
+                            e.getMessage()
+                    )
+            );
+        }
+    }
+
+    @GetMapping("/duration/{nationalId}")
+    public ResponseEntity<List<Duration>> getDuration(
+            @PathVariable String nationalId
+    ) {
+        return ResponseEntity.ok(
+                durationService.getByNationalId(nationalId)
+        );
+    }
+
+    @PutMapping("/update-duration/{id}")
+    public ResponseEntity<?> updateDuration(
+            @PathVariable Long id,
+            @RequestBody DurationRequest request
+    ) {
+        durationService.updateDuration(id, request);
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Duration updated successfully");
+        return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/delete-duration/{id}")
+    public ResponseEntity<?> deleteDuration(
+            @PathVariable Long id
+    ) {
+        durationService.deleteDuration(id);
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Duration deleted successfully");
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/add-doses")
+    public ResponseEntity<String> addDose(@RequestBody DoseRequest request) {
+        return ResponseEntity.ok(doseService.addDose(request));
+    }
+
+    @GetMapping("/doses/{nationalId}")
+    public ResponseEntity<List<Dose>> getDoseByNationalId(@PathVariable String nationalId) {
+        return ResponseEntity.ok(doseService.getDoseByNationalId(nationalId));
+    }
+
+    @PutMapping("/update-doses/{id}")
+    public ResponseEntity<String> updateDose(
+            @PathVariable Long id,
+            @RequestBody DoseRequest request) {
+        return ResponseEntity.ok(doseService.updateDose(id, request));
+    }
+
+    @DeleteMapping("/delete-doses/{id}")
+    public ResponseEntity<String> deleteDose(@PathVariable Long id) {
+        return ResponseEntity.ok(doseService.deleteDose(id));
+    }
+
+    @PostMapping("/patient/prescriptions")
+    public ResponseEntity<String> createPrescription(@RequestBody PrescriptionRequest req) {
+        prescription.createPrescription(req);
+        return ResponseEntity.ok("Prescription created successfully");
+    }
+
+    @GetMapping("/patient/prescriptions/{id}")
+    public ResponseEntity<Prescription> getPrescriptionById(@PathVariable Long id) {
+        return prescription.getPrescriptionById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/patient/prescriptions/patient/{patientId}")
+    public ResponseEntity<List<Prescription>> getPrescriptionsByPatient(@PathVariable String patientId) {
+        return ResponseEntity.ok(
+                prescription.getPrescriptionsByPatientId(patientId)
+        );
+    }
+
+    @PutMapping("/patient/prescriptions/{id}")
+    public ResponseEntity<String> updatePrescription(
+            @PathVariable Long id,
+            @RequestBody PrescriptionRequest req
+    ) {
+        prescription.updatePrescription(id, req);
+        return ResponseEntity.ok("Prescription updated successfully");
+    }
+
+    @PostMapping("/create/medicine_types")
+    public ResponseEntity<String> createMedicineType(
+            @RequestBody MedicineTypeRequest request
+    ) {
+        String response = medicineType.createMedicineType(request);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/medicine_types/{nationalId}")
+    public ResponseEntity<List<MedicineType>> getMedicineType(
+            @PathVariable String nationalId
+    ) {
+        return ResponseEntity.ok(medicineType.getMedicineType(nationalId));
+    }
+
+    @PutMapping("/update/medicine_types/{id}")
+    public ResponseEntity<String> updateMedicineType(
+            @PathVariable Long id,
+            @RequestBody MedicineTypeRequest request
+    ) {
+        medicineType.updateMedicineType(id, request);
+        return ResponseEntity.ok("Medicine type updated successfully");
+    }
+
+    @DeleteMapping("/delete/medicine_types/{id}")
+    public ResponseEntity<String> deleteMedicineType(
+            @PathVariable Long id
+    ) {
+        medicineType.deleteMedicineType(id);
+        return ResponseEntity.ok("Medicine type deleted successfully");
+    }
+
+    @PostMapping("/create/dose-time")
+    public String createDoseTime(@RequestBody DoseTimeRequest request) {
+        return doseTime.createDoseTime(request);
+    }
+
+    @GetMapping("/dose-time/{nationalId}")
+    public List<DoseTime> getDoseTime(@PathVariable String nationalId) {
+        return doseTime.getDoseTimeByNationalId(nationalId);
+    }
+
+    @PutMapping("/update/dose-time/{id}")
+    public String updateDoseTime(
+            @PathVariable Long id,
+            @RequestBody DoseTimeRequest request) {
+        return doseTime.updateDoseTime(id, request);
+    }
+
+    @DeleteMapping("/delete/dose-time/{id}")
+    public String deleteDoseTime(@PathVariable Long id) {
+        return doseTime.deleteDoseTime(id);
     }
 }

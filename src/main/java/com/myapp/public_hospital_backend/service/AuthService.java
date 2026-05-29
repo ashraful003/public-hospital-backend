@@ -10,15 +10,20 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class AuthService {
 
     private final UserRepository repo;
     private final JwtUtils jwt;
     private final PasswordEncoder encoder;
+
+    public AuthService(UserRepository repo, JwtUtils jwt, PasswordEncoder encoder) {
+        this.repo = repo;
+        this.jwt = jwt;
+        this.encoder = encoder;
+    }
+
 
     public boolean isUserRegistered(String email) {
         return repo.existsByEmail(email);
@@ -28,26 +33,30 @@ public class AuthService {
         if (req.getEmail() == null || req.getPassword() == null) {
             throw new RuntimeException("Email and password required");
         }
+
         if (repo.findByEmail(req.getEmail()).isPresent()) {
             throw new RuntimeException("Email already exists");
         }
+
         if (repo.findByNationalId(req.getNationalId()).isPresent()) {
             throw new RuntimeException("National ID already exists");
         }
+
         User user = new User();
         user.setNationalId(req.getNationalId());
         user.setName(req.getName());
         user.setEmail(req.getEmail());
         user.setPhone(req.getPhone());
         user.setAddress(req.getAddress());
+
         if (req.getDob() != null && !req.getDob().isEmpty()) {
             try {
-                LocalDate dob = LocalDate.parse(req.getDob());
-                user.setDob(dob);
+                user.setDob(LocalDate.parse(req.getDob()));
             } catch (Exception e) {
                 throw new RuntimeException("Invalid DOB format. Use yyyy-MM-dd");
             }
         }
+
         user.setPassword(encoder.encode(req.getPassword()));
         user.setWeight(req.getWeight());
         user.setInstitute(req.getInstitute());
@@ -55,6 +64,7 @@ public class AuthService {
         user.setLicense(req.getLicense());
         user.setSpecialist(req.getSpecialist());
         user.setIsActive(req.getIsActive() != null ? req.getIsActive() : true);
+
         try {
             user.setRole(
                     req.getRole() != null
@@ -64,7 +74,9 @@ public class AuthService {
         } catch (Exception e) {
             throw new RuntimeException("Invalid role");
         }
+
         repo.save(user);
+
         return new AuthResponse(
                 jwt.generateAccessToken(user.getEmail()),
                 jwt.generateRefreshToken(user.getEmail()),
@@ -76,9 +88,11 @@ public class AuthService {
     public AuthResponse login(LoginRequest req) {
         User user = repo.findByEmail(req.getEmail())
                 .orElseThrow(() -> new RuntimeException("User not found"));
+
         if (!encoder.matches(req.getPassword(), user.getPassword())) {
             throw new RuntimeException("Invalid password");
         }
+
         return new AuthResponse(
                 jwt.generateAccessToken(user.getEmail()),
                 jwt.generateRefreshToken(user.getEmail()),
@@ -89,9 +103,10 @@ public class AuthService {
 
     public AuthResponse refreshToken(RefreshTokenRequest req) {
         String email = jwt.extractEmail(req.getRefreshToken());
-        repo.findByEmail(email)
+
+        User user = repo.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        User user = repo.findByEmail(email).get();
+
         return new AuthResponse(
                 jwt.generateAccessToken(email),
                 jwt.generateRefreshToken(email),
@@ -104,18 +119,22 @@ public class AuthService {
         if (req.getEmail() == null || req.getPassword() == null) {
             throw new RuntimeException("Email and password required");
         }
+
         if (repo.findByEmail(req.getEmail()).isPresent()) {
             throw new RuntimeException("Email already exists");
         }
+
         if (repo.findByNationalId(req.getNationalId()).isPresent()) {
             throw new RuntimeException("National ID already exists");
         }
+
         User user = new User();
         user.setNationalId(req.getNationalId());
         user.setName(req.getName());
         user.setEmail(req.getEmail());
         user.setPhone(req.getPhone());
         user.setAddress(req.getAddress());
+
         if (req.getDob() != null && !req.getDob().isEmpty()) {
             try {
                 user.setDob(LocalDate.parse(req.getDob()));
@@ -123,11 +142,14 @@ public class AuthService {
                 throw new RuntimeException("Invalid DOB format. Use yyyy-MM-dd");
             }
         }
+
         user.setPassword(encoder.encode(req.getPassword()));
         user.setLicense(req.getLicense());
         user.setIsActive(req.getIsActive() != null ? req.getIsActive() : true);
         user.setRole(UserRole.PHARMACEUTICAL);
+
         repo.save(user);
+
         return new AuthResponse(
                 jwt.generateAccessToken(user.getEmail()),
                 jwt.generateRefreshToken(user.getEmail()),

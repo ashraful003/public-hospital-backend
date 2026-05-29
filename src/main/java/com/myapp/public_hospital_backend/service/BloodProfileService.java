@@ -9,10 +9,13 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
 public class BloodProfileService {
 
     private final BloodProfileRepository repository;
+
+    public BloodProfileService(BloodProfileRepository repository) {
+        this.repository = repository;
+    }
 
     public BloodProfile save(BloodProfile profile) {
         return repository.save(profile);

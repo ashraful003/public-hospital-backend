@@ -1,5 +1,6 @@
 package com.myapp.public_hospital_backend.service;
 
+import com.myapp.public_hospital_backend.dto.UserProfileResponse;
 import com.myapp.public_hospital_backend.dto.UserResponse;
 import com.myapp.public_hospital_backend.model.User;
 import com.myapp.public_hospital_backend.model.UserRole;
@@ -11,9 +12,12 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     public User getCurrentUser() {
         var authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -26,9 +30,6 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
     }
 
-    public UserResponse getCurrentUserResponse() {
-        return mapToResponse(getCurrentUser());
-    }
 
     private UserResponse mapToResponse(User user) {
         UserResponse response = new UserResponse();
@@ -122,5 +123,30 @@ public class UserService {
             throw new RuntimeException("User is not a pharmaceutical");
         }
         userRepository.delete(user);
+    }
+
+    public UserProfileResponse getUserByNationalId(String nationalId) {
+
+        User user = userRepository.findByNationalId(nationalId)
+                .orElseThrow(() ->
+                        new RuntimeException("User not found"));
+
+        UserProfileResponse response = new UserProfileResponse();
+
+        response.setNationalId(user.getNationalId());
+        response.setName(user.getName());
+        response.setEmail(user.getEmail());
+        response.setPhone(user.getPhone());
+        response.setAddress(user.getAddress());
+        response.setDob(user.getDob());
+        response.setWeight(user.getWeight());
+        response.setImageUrl(user.getImageUrl());
+        response.setInstitute(user.getInstitute());
+        response.setDegree(user.getDegree());
+        response.setLicense(user.getLicense());
+        response.setSpecialist(user.getSpecialist());
+        response.setRole(user.getRole().name());
+
+        return response;
     }
 }
