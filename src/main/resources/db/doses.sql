@@ -3,7 +3,5 @@ CREATE TABLE doses (
     dose VARCHAR(255) NOT NULL,
     national_id VARCHAR(50) NOT NULL
 );
-
--- Optional index for fast lookup
 CREATE INDEX idx_doses_national_id ON doses(national_id);
 CREATE INDEX idx_doses_dose ON doses(dose);
