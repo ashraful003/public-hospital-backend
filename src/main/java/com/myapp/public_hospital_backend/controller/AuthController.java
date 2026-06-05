@@ -34,8 +34,11 @@ public class AuthController {
     private final PrescriptionService prescription;
     private final MedicineTypeService medicineType;
     private final DoseTimeService doseTime;
+    private final BillService billService;
+    private ReportService reportService;
 
-    public AuthController(AuthService authService, OtpService otpService, PasswordService passwordService, UserService userService, BloodProfileService service, AttendanceService attendanceService, MedicineService medicineService, AdviceService advice, NextMeetService nextMeet, TestService testService, DurationService durationService, DoseService doseService, PrescriptionService prescription, MedicineTypeService medicineType, DoseTimeService doseTime) {
+
+    public AuthController(AuthService authService, OtpService otpService, PasswordService passwordService, UserService userService, BloodProfileService service, AttendanceService attendanceService, MedicineService medicineService, AdviceService advice, NextMeetService nextMeet, TestService testService, DurationService durationService, DoseService doseService, PrescriptionService prescription, MedicineTypeService medicineType, DoseTimeService doseTime, BillService billService, ReportService reportService) {
         this.authService = authService;
         this.otpService = otpService;
         this.passwordService = passwordService;
@@ -51,6 +54,8 @@ public class AuthController {
         this.prescription = prescription;
         this.medicineType = medicineType;
         this.doseTime = doseTime;
+        this.billService = billService;
+        this.reportService = reportService;
     }
 
 
@@ -731,5 +736,107 @@ public class AuthController {
     @DeleteMapping("/delete/dose-time/{id}")
     public String deleteDoseTime(@PathVariable Long id) {
         return doseTime.deleteDoseTime(id);
+    }
+
+    @GetMapping("/patient/bills/{patientId}")
+    public ResponseEntity<?> getPatientBills(
+            @PathVariable String patientId
+    ) {
+        return ResponseEntity.ok(
+                billService.getPatientBills(
+                        patientId
+                )
+        );
+    }
+
+    @GetMapping("/all/bills")
+    public ResponseEntity<?> getAllBills() {
+        return ResponseEntity.ok(billService.getAllBills());
+    }
+
+    @GetMapping("/bills/{id}")
+    public ResponseEntity<?> getBillById(@PathVariable Long id) {
+        return ResponseEntity.ok(
+                billService.getBill(id)
+        );
+    }
+
+    @PutMapping("/bill/payment/{id}")
+    public ResponseEntity<?> payBill(
+            @PathVariable Long id,
+            @RequestBody BillPaymentRequest request
+    ) {
+        return ResponseEntity.ok(
+                billService.updatePayment(
+                        id,
+                        request.getTotalPay(),
+                        request.getDiscountAmount(),
+                        request.getAccountantName(),
+                        request.getAccountantId()
+                )
+        );
+    }
+
+    @PostMapping("/patient/create-report")
+    public Report createTestReport(@RequestBody ReportRequest request) {
+        return reportService.createReport(request);
+    }
+
+    @GetMapping("/patient/all-report")
+    public List<Report> getAllTestReports() {
+        return reportService.getAllReports();
+    }
+
+    @GetMapping("/report/{id}")
+    public ResponseEntity<?> getReportById(@PathVariable Long id) {
+        return ResponseEntity.ok(reportService.getReportById(id));
+    }
+
+    @GetMapping("/patient/report/{patientId}")
+    public List<Report> getTestReportByPatientId(@PathVariable String patientId) {
+        return reportService.getByPatientId(patientId);
+    }
+
+    @GetMapping("/report/center/{centerName}")
+    public List<Report> getReportsByCenterName(
+            @PathVariable String centerName) {
+        return reportService.getByCenterName(
+                centerName
+        );
+    }
+
+    @PutMapping("/patient/update-report/{id}")
+    public Report updateTestReport(
+            @PathVariable Long id,
+            @RequestBody ReportRequest request
+    ) {
+        return reportService.updateReport(id, request);
+    }
+
+    @PostMapping("/register-diagnosticCenter")
+    public ResponseEntity<?> diagnosticCenterRegister(@RequestBody RegisterRequest request) {
+        try {
+            AuthResponse response = authService.diagnosticCenterRegister(request);
+            return ResponseEntity.ok(Map.of(
+                    "message", response.getMessage(),
+                    "accessToken", response.getAccessToken(),
+                    "refreshToken", response.getRefreshToken(),
+                    "role", response.getRole()
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("message", e.getMessage()));
+        }
+    }
+
+    @GetMapping("all-diagnosticCenter")
+    public List<User> getAllDiagnosticCenter() {
+        return userService.getAllDiagnosticCenter();
+    }
+
+    @DeleteMapping("/delete-diagnosticCenter/{id}")
+    public ResponseEntity<?> deleteDiagnosticCenter(@PathVariable Long id) {
+        userService.deleteDiagnosticCenter(id);
+        return ResponseEntity.ok("Pharmaceutical deleted successfully");
     }
 }

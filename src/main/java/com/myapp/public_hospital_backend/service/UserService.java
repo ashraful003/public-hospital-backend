@@ -19,25 +19,6 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public User getCurrentUser() {
-        var authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()
-                || authentication.getPrincipal().equals("anonymousUser")) {
-            throw new RuntimeException("User not authenticated");
-        }
-        String email = authentication.getName();
-        return userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
-    }
-
-
-    private UserResponse mapToResponse(User user) {
-        UserResponse response = new UserResponse();
-        response.setName(user.getName());
-        response.setEmail(user.getEmail());
-        response.setRole(user.getRole().name());
-        return response;
-    }
 
     public User getCurrentUserByEmail(String email) {
         return userRepository.findByEmail(email)
@@ -128,11 +109,8 @@ public class UserService {
     public UserProfileResponse getUserByNationalId(String nationalId) {
 
         User user = userRepository.findByNationalId(nationalId)
-                .orElseThrow(() ->
-                        new RuntimeException("User not found"));
-
+                .orElseThrow(() -> new RuntimeException("User not found"));
         UserProfileResponse response = new UserProfileResponse();
-
         response.setNationalId(user.getNationalId());
         response.setName(user.getName());
         response.setEmail(user.getEmail());
@@ -146,7 +124,19 @@ public class UserService {
         response.setLicense(user.getLicense());
         response.setSpecialist(user.getSpecialist());
         response.setRole(user.getRole().name());
-
         return response;
+    }
+
+    public List<User> getAllDiagnosticCenter() {
+        return userRepository.findByRole(UserRole.DIAGNOSTIC_CENTER);
+    }
+
+    public void deleteDiagnosticCenter(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Diagnostic Center not found"));
+        if (user.getRole() != UserRole.DIAGNOSTIC_CENTER) {
+            throw new RuntimeException("User is not a Diagnostic Center");
+        }
+        userRepository.delete(user);
     }
 }
