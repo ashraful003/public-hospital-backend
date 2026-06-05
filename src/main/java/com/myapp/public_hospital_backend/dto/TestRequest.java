@@ -5,6 +5,9 @@ public class TestRequest {
     private String testName;
     private Double price;
     private String currency;
+    private String unit;
+    private String range;
+    private String result;
 
     public TestRequest() {
     }
@@ -39,5 +42,29 @@ public class TestRequest {
 
     public void setCurrency(String currency) {
         this.currency = currency;
+    }
+
+    public String getUnit() {
+        return unit;
+    }
+
+    public void setUnit(String unit) {
+        this.unit = unit;
+    }
+
+    public String getRange() {
+        return range;
+    }
+
+    public void setRange(String range) {
+        this.range = range;
+    }
+
+    public String getResult() {
+        return result;
+    }
+
+    public void setResult(String result) {
+        this.result = result;
     }
 }

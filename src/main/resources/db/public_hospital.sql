@@ -20,11 +20,18 @@ ALTER TABLE users DROP CONSTRAINT IF EXISTS users_role_check;
 ALTER TABLE users ADD CONSTRAINT users_role_check
 CHECK (
     role IN (
+        'ADMIN',
         'PATIENT',
         'DOCTOR',
         'NURSE',
         'DOCTOR_ASSISTANT',
         'CLEANER'
+        'ACCOUNTANT'
+        'PHARMACIST'
+        'RECEPTIONIST'
+        'PHARMACEUTICAL'
+        'DIAGNOSTIC_CENTER'
+        'DRIVER'
     )
 );
 CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);

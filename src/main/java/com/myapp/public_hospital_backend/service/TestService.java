@@ -16,10 +16,11 @@ public class TestService {
     }
 
     public Test addTest(TestRequest request) {
-        List<Test> existing = testRepository.findByNameAndTestName(
-                request.getName(),
-                request.getTestName()
-        );
+        List<Test> existing =
+                testRepository.findByNameAndTestName(
+                        request.getName(),
+                        request.getTestName()
+                );
         if (!existing.isEmpty()) {
             throw new RuntimeException("Test already exists");
         }
@@ -28,6 +29,9 @@ public class TestService {
         test.setTestName(request.getTestName());
         test.setPrice(request.getPrice());
         test.setCurrency(request.getCurrency());
+        test.setUnit(request.getUnit());
+        test.setRange(request.getRange());
+        test.setResult(request.getResult());
         return testRepository.save(test);
     }
 
@@ -50,6 +54,9 @@ public class TestService {
         test.setTestName(request.getTestName());
         test.setPrice(request.getPrice());
         test.setCurrency(request.getCurrency());
+        test.setUnit(request.getUnit());
+        test.setRange(request.getRange());
+        test.setResult(request.getResult());
         return testRepository.save(test);
     }
 

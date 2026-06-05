@@ -16,16 +16,32 @@ public class Test {
     private Double price;
     @Column(nullable = false)
     private String currency;
+    @Column
+    private String unit;
+    @Column(name = "reference_range")
+    private String range;
+    @Column
+    private String result;
 
     public Test() {
     }
 
-    public Test(Long id, String name, String testName, Double price, String currency) {
+    public Test(Long id,
+                String name,
+                String testName,
+                Double price,
+                String currency,
+                String unit,
+                String range,
+                String result) {
         this.id = id;
         this.name = name;
         this.testName = testName;
         this.price = price;
         this.currency = currency;
+        this.unit = unit;
+        this.range = range;
+        this.result = result;
     }
 
     public Long getId() {
@@ -66,5 +82,29 @@ public class Test {
 
     public void setCurrency(String currency) {
         this.currency = currency;
+    }
+
+    public String getUnit() {
+        return unit;
+    }
+
+    public void setUnit(String unit) {
+        this.unit = unit;
+    }
+
+    public String getRange() {
+        return range;
+    }
+
+    public void setRange(String range) {
+        this.range = range;
+    }
+
+    public String getResult() {
+        return result;
+    }
+
+    public void setResult(String result) {
+        this.result = result;
     }
 }
