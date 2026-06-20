@@ -1,0 +1,8 @@
+CREATE TABLE hospital_seats (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    type VARCHAR(100) NOT NULL,
+    seat_no VARCHAR(50) NOT NULL UNIQUE,
+    price DOUBLE NOT NULL,
+    currency VARCHAR(10) NOT NULL,
+    status BOOLEAN NOT NULL DEFAULT TRUE
+);
