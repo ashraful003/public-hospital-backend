@@ -1,0 +1,7 @@
+CREATE TABLE parking (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    floor VARCHAR(50) NOT NULL,
+    parking_no VARCHAR(50) NOT NULL UNIQUE,
+    parking_fee DOUBLE NOT NULL,
+    is_active BOOLEAN DEFAULT TRUE
+);

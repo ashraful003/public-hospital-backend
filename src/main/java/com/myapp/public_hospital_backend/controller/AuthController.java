@@ -3,8 +3,10 @@ package com.myapp.public_hospital_backend.controller;
 import com.myapp.public_hospital_backend.dto.*;
 import com.myapp.public_hospital_backend.model.*;
 import com.myapp.public_hospital_backend.service.*;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,6 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -36,9 +39,13 @@ public class AuthController {
     private final DoseTimeService doseTime;
     private final BillService billService;
     private ReportService reportService;
+    private SeatService seatService;
+    private final EmergencyContactService emergencyContactService;
+    private final ParkingService parkingService;
+    private final UserParkingService userParkingService;
 
 
-    public AuthController(AuthService authService, OtpService otpService, PasswordService passwordService, UserService userService, BloodProfileService service, AttendanceService attendanceService, MedicineService medicineService, AdviceService advice, NextMeetService nextMeet, TestService testService, DurationService durationService, DoseService doseService, PrescriptionService prescription, MedicineTypeService medicineType, DoseTimeService doseTime, BillService billService, ReportService reportService) {
+    public AuthController(AuthService authService, OtpService otpService, PasswordService passwordService, UserService userService, BloodProfileService service, AttendanceService attendanceService, MedicineService medicineService, AdviceService advice, NextMeetService nextMeet, TestService testService, DurationService durationService, DoseService doseService, PrescriptionService prescription, MedicineTypeService medicineType, DoseTimeService doseTime, BillService billService, ReportService reportService, SeatService seatService, EmergencyContactService emergencyContactService, ParkingService parkingService, UserParkingService userParkingService) {
         this.authService = authService;
         this.otpService = otpService;
         this.passwordService = passwordService;
@@ -56,6 +63,10 @@ public class AuthController {
         this.doseTime = doseTime;
         this.billService = billService;
         this.reportService = reportService;
+        this.seatService = seatService;
+        this.emergencyContactService = emergencyContactService;
+        this.parkingService = parkingService;
+        this.userParkingService = userParkingService;
     }
 
 
@@ -838,5 +849,213 @@ public class AuthController {
     public ResponseEntity<?> deleteDiagnosticCenter(@PathVariable Long id) {
         userService.deleteDiagnosticCenter(id);
         return ResponseEntity.ok("Pharmaceutical deleted successfully");
+    }
+
+    @PostMapping("/seat-create")
+    public ResponseEntity<?> createSeat(@Valid @RequestBody SeatRequest request) {
+        try {
+            HospitalSeat created = seatService.createSeat(request);
+            Map<String, Object> response = new LinkedHashMap<>();
+            response.put("message", "Seat created successfully!");
+            return new ResponseEntity<>(response, HttpStatus.CREATED);
+        } catch (RuntimeException e) {
+            Map<String, Object> response = new LinkedHashMap<>();
+            response.put("message", e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+        }
+    }
+
+    @GetMapping("/all-seats")
+    public ResponseEntity<List<HospitalSeat>> getAllSeats() {
+        return ResponseEntity.ok(seatService.getAllSeats());
+    }
+
+    @GetMapping("/seat/{id}")
+    public ResponseEntity<HospitalSeat> getSeatById(@PathVariable Long id) {
+        return ResponseEntity.ok(seatService.getSeatById(id));
+    }
+
+    @GetMapping("/by-seat-no/{seatNo}")
+    public ResponseEntity<HospitalSeat> getSeatBySeatNo(@PathVariable String seatNo) {
+        return ResponseEntity.ok(seatService.getSeatBySeatNo(seatNo));
+    }
+
+    @GetMapping("/available-seat")
+    public ResponseEntity<List<HospitalSeat>> getAvailableSeats() {
+        return ResponseEntity.ok(seatService.getAvailableSeats());
+    }
+
+    @GetMapping("/unavailable-seat")
+    public ResponseEntity<List<HospitalSeat>> getUnavailableSeats() {
+        return ResponseEntity.ok(seatService.getUnavailableSeats());
+    }
+
+    @GetMapping("/seat-type/{type}")
+    public ResponseEntity<List<HospitalSeat>> getSeatsByType(@PathVariable String type) {
+        return ResponseEntity.ok(seatService.getSeatsByType(type));
+    }
+
+    @GetMapping("/available/type/{type}")
+    public ResponseEntity<List<HospitalSeat>> getAvailableSeatsByType(@PathVariable String type) {
+        return ResponseEntity.ok(seatService.getAvailableSeatsByType(type));
+    }
+
+    @GetMapping("/count/available/type/{type}")
+    public ResponseEntity<Long> countAvailableSeatsByType(@PathVariable String type) {
+        return ResponseEntity.ok(seatService.countAvailableSeatsByType(type));
+    }
+
+    @PutMapping("/seats/{id}")
+    public ResponseEntity<HospitalSeat> updateSeat(
+            @PathVariable Long id,
+            @Valid @RequestBody SeatRequest request) {
+        return ResponseEntity.ok(seatService.updateSeat(id, request));
+    }
+
+    @PatchMapping("/seats/toggle-status/{id}")
+    public ResponseEntity<HospitalSeat> toggleSeatStatus(@PathVariable Long id) {
+        return ResponseEntity.ok(seatService.toggleSeatStatus(id));
+    }
+
+    @DeleteMapping("/seat-delete/{id}")
+    public ResponseEntity<String> deleteSeat(@PathVariable Long id) {
+        seatService.deleteSeat(id);
+        return ResponseEntity.ok("Seat deleted successfully");
+    }
+
+    @PostMapping("/create-contact")
+    public ResponseEntity<?> createEmergencyContact(@Valid @RequestBody EmergencyContactRequest request) {
+        try {
+            EmergencyContact created = emergencyContactService.createEmergencyContact(request);
+            Map<String, Object> response = new LinkedHashMap<>();
+            response.put("message", "Emergency Contact created successfully!");
+            return new ResponseEntity<>(response, HttpStatus.CREATED);
+        } catch (RuntimeException e) {
+            Map<String, Object> response = new LinkedHashMap<>();
+            response.put("message", e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+        }
+    }
+
+    @PutMapping("/update-contact/{id}")
+    public ResponseEntity<?> updateEmergencyContact(
+            @PathVariable Long id,
+            @Valid @RequestBody EmergencyContactRequest request) {
+        try {
+            EmergencyContact updated = emergencyContactService.updateEmergencyContact(id, request);
+            Map<String, Object> response = new LinkedHashMap<>();
+            response.put("message", "Emergency Contact updated successfully!");
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            Map<String, Object> response = new LinkedHashMap<>();
+            response.put("message", e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/contact/{id}")
+    public ResponseEntity<?> getEmergencyContactById(
+            @PathVariable Long id
+    ) {
+        try {
+            EmergencyContact contact = emergencyContactService.getEmergencyContactById(id);
+            return ResponseEntity.ok(contact);
+        } catch (RuntimeException e) {
+            Map<String, Object> response = new LinkedHashMap<>();
+            response.put("message", e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/contact/all")
+    public ResponseEntity<List<EmergencyContact>> getAllEmergencyContacts() {
+        return ResponseEntity.ok(emergencyContactService.getAllEmergencyContacts());
+    }
+
+    @DeleteMapping("/contact/delete/{id}")
+    public ResponseEntity<?> deleteEmergencyContact(
+            @PathVariable Long id
+    ) {
+        try {
+            emergencyContactService.deleteEmergencyContact(id);
+            Map<String, Object> response = new LinkedHashMap<>();
+            response.put("message", "Emergency Contact deleted successfully!");
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            Map<String, Object> response = new LinkedHashMap<>();
+            response.put("message", e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PostMapping("/create-parking")
+    public ResponseEntity<?> createParking(@Valid @RequestBody ParkingRequest request) {
+        Map<String, Object> response = parkingService.createParking(request);
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/update-parking/{id}")
+    public ResponseEntity<?> update(
+            @PathVariable Long id,
+            @RequestBody ParkingRequest request) {
+        Map<String, Object> response = new LinkedHashMap<>();
+        parkingService.updateParking(id, request);
+        response.put("message", "Parking updated successfully");
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/parking/{id}")
+    public ResponseEntity<?> getParkingById(@PathVariable Long id) {
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("data", parkingService.getParkingById(id));
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/parking/all")
+    public ResponseEntity<?> getAllParking() {
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("data", parkingService.getAllParking());
+        return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/parking/delete/{id}")
+    public ResponseEntity<?> deleteParking(@PathVariable Long id) {
+        parkingService.deleteParking(id);
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("message", "Parking deleted successfully");
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/create-user-parking")
+    public ResponseEntity<?> createUserParking(
+            @RequestBody UserParkingRequest request
+    ) {
+        return ResponseEntity.ok(
+                userParkingService.createUserParking(request)
+        );
+    }
+
+    @GetMapping("/get-all-user-parking")
+    public ResponseEntity<?> getAllUserParking() {
+        return ResponseEntity.ok(userParkingService.getAllUserParking());
+    }
+
+    @GetMapping("/get-active-user-parking")
+    public ResponseEntity<?> getActiveUserParking() {
+        return ResponseEntity.ok(userParkingService.getActiveUserParking());
+    }
+
+    @GetMapping("/get-patient-parking/{patientId}")
+    public ResponseEntity<?> getPatientParking(
+            @PathVariable String patientId
+    ) {
+        return ResponseEntity.ok(userParkingService.getPatientParking(patientId));
+    }
+
+    @PutMapping("/exit-vehicle/{vehicleNo}")
+    public ResponseEntity<?> exitVehicle(
+            @PathVariable String vehicleNo
+    ) {
+        return ResponseEntity.ok(userParkingService.exitVehicle(vehicleNo));
     }
 }
