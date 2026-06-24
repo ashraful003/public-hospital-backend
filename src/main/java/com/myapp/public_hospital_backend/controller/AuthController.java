@@ -4,8 +4,7 @@ import com.myapp.public_hospital_backend.dto.*;
 import com.myapp.public_hospital_backend.model.*;
 import com.myapp.public_hospital_backend.service.*;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -43,9 +43,10 @@ public class AuthController {
     private final EmergencyContactService emergencyContactService;
     private final ParkingService parkingService;
     private final UserParkingService userParkingService;
+    private final AppointmentScheduleService appointmentScheduleService;
+    private final AppointmentService appointmentService;
 
-
-    public AuthController(AuthService authService, OtpService otpService, PasswordService passwordService, UserService userService, BloodProfileService service, AttendanceService attendanceService, MedicineService medicineService, AdviceService advice, NextMeetService nextMeet, TestService testService, DurationService durationService, DoseService doseService, PrescriptionService prescription, MedicineTypeService medicineType, DoseTimeService doseTime, BillService billService, ReportService reportService, SeatService seatService, EmergencyContactService emergencyContactService, ParkingService parkingService, UserParkingService userParkingService) {
+    public AuthController(AuthService authService, OtpService otpService, PasswordService passwordService, UserService userService, BloodProfileService service, AttendanceService attendanceService, MedicineService medicineService, AdviceService advice, NextMeetService nextMeet, TestService testService, DurationService durationService, DoseService doseService, PrescriptionService prescription, MedicineTypeService medicineType, DoseTimeService doseTime, BillService billService, ReportService reportService, SeatService seatService, EmergencyContactService emergencyContactService, ParkingService parkingService, UserParkingService userParkingService, AppointmentScheduleService appointmentScheduleService, AppointmentService appointmentService) {
         this.authService = authService;
         this.otpService = otpService;
         this.passwordService = passwordService;
@@ -67,6 +68,8 @@ public class AuthController {
         this.emergencyContactService = emergencyContactService;
         this.parkingService = parkingService;
         this.userParkingService = userParkingService;
+        this.appointmentScheduleService = appointmentScheduleService;
+        this.appointmentService = appointmentService;
     }
 
 
@@ -1057,5 +1060,79 @@ public class AuthController {
             @PathVariable String vehicleNo
     ) {
         return ResponseEntity.ok(userParkingService.exitVehicle(vehicleNo));
+    }
+
+    @PostMapping("/appointment-schedule_create")
+    public ResponseEntity<AppointmentSchedule> createAppointment(
+            @Valid @RequestBody AppointmentScheduleRequest request) {
+        AppointmentSchedule created = appointmentScheduleService.createAppointment(request);
+        return new ResponseEntity<>(created, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/appointment-schedule-all")
+    public ResponseEntity<List<AppointmentSchedule>> getAllAppointmentsSchedule() {
+        return ResponseEntity.ok(appointmentScheduleService.getAllAppointments());
+    }
+
+    @GetMapping("/appointment-schedule/id/{id}")
+    public ResponseEntity<AppointmentSchedule> getAppointmentScheduleById(
+            @PathVariable Long id) {
+
+        return ResponseEntity.ok(
+                appointmentScheduleService.getAppointmentById(id));
+    }
+
+    @GetMapping("/appointment-schedule/national-id/{nationalId}")
+    public ResponseEntity<List<AppointmentSchedule>> getAppointmentByNationalId(
+            @PathVariable String nationalId) {
+
+        return ResponseEntity.ok(
+                appointmentScheduleService.getAppointmentsByNationalId(nationalId));
+    }
+
+    @PutMapping("/appointment-schedule-update/{id}")
+    public ResponseEntity<AppointmentSchedule> updateAppointment(
+            @PathVariable Long id,
+            @Valid @RequestBody AppointmentScheduleRequest request) {
+        return ResponseEntity.ok(appointmentScheduleService.updateAppointment(id, request));
+    }
+
+    @DeleteMapping("/appointment-schedule-delete/{id}")
+    public ResponseEntity<Void> deleteAppointmentSchedule(@PathVariable Long id) {
+        appointmentScheduleService.deleteAppointment(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/createAppointment")
+    public Map<String, Object> createAppointment(@RequestBody AppointmentRequest request) {
+        return appointmentService.createAppointment(request);
+    }
+
+    @GetMapping("/getAllAppointments")
+    public List<Appointment> getAllAppointments() {
+        return appointmentService.getAllAppointments();
+    }
+
+    @GetMapping("/getAppointmentsByPatientId/{patientId}")
+    public List<Appointment> getAppointmentsByPatientId(@PathVariable Long patientId) {
+        return appointmentService.getAppointmentsByPatientId(patientId);
+    }
+
+    @GetMapping("/getAppointmentsByDoctorId/{doctorId}")
+    public List<Appointment> getAppointmentsByDoctorId(@PathVariable Long doctorId) {
+        return appointmentService.getAppointmentsByDoctorId(doctorId);
+    }
+
+    @PutMapping("/updateAppointmentStatus/{id}")
+    public Map<String, Object> updateAppointmentStatus(
+            @PathVariable Long id,
+            @RequestParam AppointmentStatus status,
+            @RequestParam(required = false) String reason) {
+        return appointmentService.updateAppointmentStatus(id, status, reason);
+    }
+
+    @DeleteMapping("/deleteAppointment/{id}")
+    public Map<String, Object> deleteAppointment(@PathVariable Long id) {
+        return appointmentService.deleteAppointment(id);
     }
 }
