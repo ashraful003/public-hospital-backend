@@ -55,6 +55,7 @@ public class AuthService {
         user.setDegree(req.getDegree());
         user.setLicense(req.getLicense());
         user.setSpecialist(req.getSpecialist());
+        user.setDepartment(req.getDepartment());
         user.setIsActive(req.getIsActive() != null ? req.getIsActive() : true);
         try {
             user.setRole(req.getRole() != null ? UserRole.valueOf(req.getRole().toUpperCase()) : UserRole.PATIENT);

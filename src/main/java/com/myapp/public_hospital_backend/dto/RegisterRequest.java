@@ -14,6 +14,7 @@ public class RegisterRequest {
     private String degree;
     private String license;
     private String specialist;
+    private String department;
     private Boolean isActive;
     private String role;
 
@@ -122,6 +123,14 @@ public class RegisterRequest {
 
     public void setSpecialist(String specialist) {
         this.specialist = specialist;
+    }
+
+    public String getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(String department) {
+        this.department = department;
     }
 
     public Boolean getIsActive() {

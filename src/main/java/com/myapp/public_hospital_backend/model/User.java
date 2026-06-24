@@ -31,6 +31,7 @@ public class User {
     private String degree;
     private String license;
     private String specialist;
+    private String department;
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private UserRole role;
@@ -143,6 +144,14 @@ public class User {
 
     public void setSpecialist(String specialist) {
         this.specialist = specialist;
+    }
+
+    public String getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(String department) {
+        this.department = department;
     }
 
     public UserRole getRole() {
