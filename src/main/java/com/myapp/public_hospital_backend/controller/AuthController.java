@@ -45,8 +45,9 @@ public class AuthController {
     private final UserParkingService userParkingService;
     private final AppointmentScheduleService appointmentScheduleService;
     private final AppointmentService appointmentService;
+    private final HospitalAdmissionService admissionService;
 
-    public AuthController(AuthService authService, OtpService otpService, PasswordService passwordService, UserService userService, BloodProfileService service, AttendanceService attendanceService, MedicineService medicineService, AdviceService advice, NextMeetService nextMeet, TestService testService, DurationService durationService, DoseService doseService, PrescriptionService prescription, MedicineTypeService medicineType, DoseTimeService doseTime, BillService billService, ReportService reportService, SeatService seatService, EmergencyContactService emergencyContactService, ParkingService parkingService, UserParkingService userParkingService, AppointmentScheduleService appointmentScheduleService, AppointmentService appointmentService) {
+    public AuthController(AuthService authService, OtpService otpService, PasswordService passwordService, UserService userService, BloodProfileService service, AttendanceService attendanceService, MedicineService medicineService, AdviceService advice, NextMeetService nextMeet, TestService testService, DurationService durationService, DoseService doseService, PrescriptionService prescription, MedicineTypeService medicineType, DoseTimeService doseTime, BillService billService, ReportService reportService, SeatService seatService, EmergencyContactService emergencyContactService, ParkingService parkingService, UserParkingService userParkingService, AppointmentScheduleService appointmentScheduleService, AppointmentService appointmentService, HospitalAdmissionService admissionService) {
         this.authService = authService;
         this.otpService = otpService;
         this.passwordService = passwordService;
@@ -70,6 +71,7 @@ public class AuthController {
         this.userParkingService = userParkingService;
         this.appointmentScheduleService = appointmentScheduleService;
         this.appointmentService = appointmentService;
+        this.admissionService = admissionService;
     }
 
 
@@ -1134,5 +1136,50 @@ public class AuthController {
     @DeleteMapping("/deleteAppointment/{id}")
     public Map<String, Object> deleteAppointment(@PathVariable Long id) {
         return appointmentService.deleteAppointment(id);
+    }
+
+    @PostMapping("/admission-create")
+    public ResponseEntity<String> admitPatient(@RequestBody HospitalAdmissionRequest request) {
+        String result = admissionService.admitPatient(request);
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/admission-all")
+    public ResponseEntity<List<HospitalAdmission>> getAllAdmissions() {
+        return ResponseEntity.ok(admissionService.getAllAdmissions());
+    }
+
+    @GetMapping("/admission/{id}")
+    public ResponseEntity<HospitalAdmission> getAdmissionById(@PathVariable Long id) {
+        return ResponseEntity.ok(admissionService.getById(id));
+    }
+
+    @GetMapping("/admission/patient/{patientId}")
+    public ResponseEntity<List<HospitalAdmission>> getAdmissionByPatientId(@PathVariable Long patientId) {
+        return ResponseEntity.ok(admissionService.getByPatientId(patientId));
+    }
+
+    @PutMapping("/admission-update/{id}")
+    public ResponseEntity<HospitalAdmission> updateAdmission(
+            @PathVariable Long id,
+            @RequestBody HospitalAdmissionRequest request) {
+        return ResponseEntity.ok(admissionService.updateAdmission(id, request));
+    }
+
+    @PutMapping("/admission-transfer/{id}")
+    public ResponseEntity<HospitalAdmission> transferSeat(
+            @PathVariable Long id,
+            @RequestBody HospitalAdmissionRequest request) {
+        return ResponseEntity.ok(
+                admissionService.transferSeat(id, request)
+        );
+    }
+
+    @PutMapping("/admission-discharge/{id}")
+    public ResponseEntity<String> dischargePatient(
+            @PathVariable Long id,
+            @RequestBody HospitalAdmissionRequest request) {
+        String result = admissionService.dischargePatient(id, request);
+        return ResponseEntity.ok(result);
     }
 }
