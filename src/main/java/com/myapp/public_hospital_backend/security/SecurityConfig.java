@@ -38,6 +38,7 @@ public class SecurityConfig {
                         .hasAnyRole("PHARMACEUTICAL", "ADMIN")
                         .requestMatchers("/api/auth/seats/**").permitAll()
                         .requestMatchers("/api/auth/parking/**").permitAll()
+                        .requestMatchers("/api/auth/admission/**").permitAll()
                         .anyRequest().authenticated()
                 );
 
