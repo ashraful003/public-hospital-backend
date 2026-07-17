@@ -46,8 +46,9 @@ public class AuthController {
     private final AppointmentScheduleService appointmentScheduleService;
     private final AppointmentService appointmentService;
     private final HospitalAdmissionService admissionService;
-
-    public AuthController(AuthService authService, OtpService otpService, PasswordService passwordService, UserService userService, BloodProfileService service, AttendanceService attendanceService, MedicineService medicineService, AdviceService advice, NextMeetService nextMeet, TestService testService, DurationService durationService, DoseService doseService, PrescriptionService prescription, MedicineTypeService medicineType, DoseTimeService doseTime, BillService billService, ReportService reportService, SeatService seatService, EmergencyContactService emergencyContactService, ParkingService parkingService, UserParkingService userParkingService, AppointmentScheduleService appointmentScheduleService, AppointmentService appointmentService, HospitalAdmissionService admissionService) {
+    private final InpatientBillService inpatientBillService;
+    private final DoctorBnService doctorBnService;
+    public AuthController(AuthService authService, OtpService otpService, PasswordService passwordService, UserService userService, BloodProfileService service, AttendanceService attendanceService, MedicineService medicineService, AdviceService advice, NextMeetService nextMeet, TestService testService, DurationService durationService, DoseService doseService, PrescriptionService prescription, MedicineTypeService medicineType, DoseTimeService doseTime, BillService billService, ReportService reportService, SeatService seatService, EmergencyContactService emergencyContactService, ParkingService parkingService, UserParkingService userParkingService, AppointmentScheduleService appointmentScheduleService, AppointmentService appointmentService, HospitalAdmissionService admissionService, InpatientBillService inpatientBillService, DoctorBnService doctorBnService) {
         this.authService = authService;
         this.otpService = otpService;
         this.passwordService = passwordService;
@@ -72,6 +73,9 @@ public class AuthController {
         this.appointmentScheduleService = appointmentScheduleService;
         this.appointmentService = appointmentService;
         this.admissionService = admissionService;
+        this.inpatientBillService = inpatientBillService;
+        this.doctorBnService = doctorBnService;
+
     }
 
 
@@ -1182,4 +1186,50 @@ public class AuthController {
         String result = admissionService.dischargePatient(id, request);
         return ResponseEntity.ok(result);
     }
+
+    @GetMapping("/inpatient-bill-all")
+    public ResponseEntity<List<InpatientBill>> getAllInPatientBills() {
+        return ResponseEntity.ok(inpatientBillService.getAllBills());
+    }
+
+    @GetMapping("/inpatient-bill/{id}")
+    public ResponseEntity<InpatientBill> getInPatientBillById(@PathVariable Long id) {
+        return ResponseEntity.ok(inpatientBillService.getBillById(id));
+    }
+
+    @GetMapping("/inpatient-bill/patient/{patientId}")
+    public ResponseEntity<List<InpatientBill>> getBillsByPatientId(@PathVariable Long patientId) {
+        return ResponseEntity.ok(inpatientBillService.getBillsByPatientId(patientId));
+    }
+
+    @PutMapping("/inpatient-bill-update/{id}")
+    public ResponseEntity<InpatientBill> updateBill(
+            @PathVariable("id") Long id,
+            @RequestBody InpatientBillRequest request) {
+        InpatientBill updatedBill = inpatientBillService.updateBill(id, request);
+        return ResponseEntity.ok(updatedBill);
+    }
+
+    @PostMapping("/doctorBn-profile-create")
+    public String createDoctorBn(@RequestBody DoctorBnRequest request) {
+        return doctorBnService.createDoctorBn(request);
+    }
+
+    @GetMapping("/doctorBn-profile/{id}")
+    public DoctorBn getDoctorBnById(@PathVariable Long id) {
+        return doctorBnService.getDoctorBnById(id);
+    }
+
+    @GetMapping("/doctorBn-profile-/doctor-id/{doctorBnId}")
+    public DoctorBn getDoctorBnByDoctorId(@PathVariable String doctorBnId) {
+        return doctorBnService.getDoctorBnByDoctorId(doctorBnId);
+    }
+
+    @PutMapping("/doctorBn-profile-update/{id}")
+    public String updateDoctorBn(
+            @PathVariable Long id,
+            @RequestBody DoctorBnRequest request) {
+        return doctorBnService.updateDoctorBn(id, request);
+    }
+
 }

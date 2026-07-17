@@ -12,10 +12,17 @@ public class Prescription {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String doctorName;
+    private String doctorBnName;
     private String doctorDegree;
+    private String doctorBnDegree;
     private String doctorSpecialist;
+    private String doctorBnSpecialist;
     private String doctorInstitute;
+    private String doctorBnInstitute;
     private String doctorLicense;
+    private String doctorBnLicense;
+    @Column(nullable = false)
+    private String doctorBnVisitingTime;
     private String patientId;
     private String patientName;
     private String patientAge;
@@ -51,12 +58,28 @@ public class Prescription {
         this.doctorName = doctorName;
     }
 
+    public String getDoctorBnName() {
+        return doctorBnName;
+    }
+
+    public void setDoctorBnName(String doctorBnName) {
+        this.doctorBnName = doctorBnName;
+    }
+
     public String getDoctorDegree() {
         return doctorDegree;
     }
 
     public void setDoctorDegree(String doctorDegree) {
         this.doctorDegree = doctorDegree;
+    }
+
+    public String getDoctorBnDegree() {
+        return doctorBnDegree;
+    }
+
+    public void setDoctorBnDegree(String doctorBnDegree) {
+        this.doctorBnDegree = doctorBnDegree;
     }
 
     public String getDoctorSpecialist() {
@@ -67,6 +90,14 @@ public class Prescription {
         this.doctorSpecialist = doctorSpecialist;
     }
 
+    public String getDoctorBnSpecialist() {
+        return doctorBnSpecialist;
+    }
+
+    public void setDoctorBnSpecialist(String doctorBnSpecialist) {
+        this.doctorBnSpecialist = doctorBnSpecialist;
+    }
+
     public String getDoctorInstitute() {
         return doctorInstitute;
     }
@@ -75,12 +106,36 @@ public class Prescription {
         this.doctorInstitute = doctorInstitute;
     }
 
+    public String getDoctorBnInstitute() {
+        return doctorBnInstitute;
+    }
+
+    public void setDoctorBnInstitute(String doctorBnInstitute) {
+        this.doctorBnInstitute = doctorBnInstitute;
+    }
+
     public String getDoctorLicense() {
         return doctorLicense;
     }
 
     public void setDoctorLicense(String doctorLicense) {
         this.doctorLicense = doctorLicense;
+    }
+
+    public String getDoctorBnLicense() {
+        return doctorBnLicense;
+    }
+
+    public void setDoctorBnLicense(String doctorBnLicense) {
+        this.doctorBnLicense = doctorBnLicense;
+    }
+
+    public String getDoctorBnVisitingTime() {
+        return doctorBnVisitingTime;
+    }
+
+    public void setDoctorBnVisitingTime(String doctorBnVisitingTime) {
+        this.doctorBnVisitingTime = doctorBnVisitingTime;
     }
 
     public String getPatientId() {
