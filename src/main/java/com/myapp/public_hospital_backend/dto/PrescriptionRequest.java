@@ -5,24 +5,38 @@ import java.util.List;
 import java.util.Map;
 
 public class PrescriptionRequest {
-    public String doctorName;
-    public String doctorDegree;
-    public String doctorSpecialist;
-    public String doctorInstitute;
-    public String doctorLicense;
-    public String patientId;
-    public String patientName;
-    public String patientAge;
-    public String patientWeight;
-    public String problems;
-    public String bloodPressure;
-    public String pulse;
-    public String temperature;
-    public List<Map<String, Object>> medicines;
-    public String advice;
-    public List<String> tests;
-    public String nextMeet;
-    public LocalDateTime date;
+
+    // Doctor info (English)
+    private String doctorName;
+    private String doctorDegree;
+    private String doctorSpecialist;
+    private String doctorInstitute;
+    private String doctorLicense;
+
+    // Doctor info (Bengali)
+    private String doctorBnName;
+    private String doctorBnDegree;
+    private String doctorBnSpecialist;
+    private String doctorBnInstitute;
+    private String doctorBnLicense;
+    private String doctorBnVisitingTime;
+
+    // Patient info
+    private String patientId;
+    private String patientName;
+    private String patientAge;
+    private String patientWeight;
+
+    // Clinical info
+    private String problems;
+    private String bloodPressure;
+    private String pulse;
+    private String temperature;
+    private List<Map<String, Object>> medicines;
+    private String advice;
+    private List<String> tests;
+    private String nextMeet;
+    private LocalDateTime date;
 
     public String getDoctorName() {
         return doctorName;
@@ -62,6 +76,54 @@ public class PrescriptionRequest {
 
     public void setDoctorLicense(String doctorLicense) {
         this.doctorLicense = doctorLicense;
+    }
+
+    public String getDoctorBnName() {
+        return doctorBnName;
+    }
+
+    public void setDoctorBnName(String doctorBnName) {
+        this.doctorBnName = doctorBnName;
+    }
+
+    public String getDoctorBnDegree() {
+        return doctorBnDegree;
+    }
+
+    public void setDoctorBnDegree(String doctorBnDegree) {
+        this.doctorBnDegree = doctorBnDegree;
+    }
+
+    public String getDoctorBnSpecialist() {
+        return doctorBnSpecialist;
+    }
+
+    public void setDoctorBnSpecialist(String doctorBnSpecialist) {
+        this.doctorBnSpecialist = doctorBnSpecialist;
+    }
+
+    public String getDoctorBnInstitute() {
+        return doctorBnInstitute;
+    }
+
+    public void setDoctorBnInstitute(String doctorBnInstitute) {
+        this.doctorBnInstitute = doctorBnInstitute;
+    }
+
+    public String getDoctorBnLicense() {
+        return doctorBnLicense;
+    }
+
+    public void setDoctorBnLicense(String doctorBnLicense) {
+        this.doctorBnLicense = doctorBnLicense;
+    }
+
+    public String getDoctorBnVisitingTime() {
+        return doctorBnVisitingTime;
+    }
+
+    public void setDoctorBnVisitingTime(String doctorBnVisitingTime) {
+        this.doctorBnVisitingTime = doctorBnVisitingTime;
     }
 
     public String getPatientId() {

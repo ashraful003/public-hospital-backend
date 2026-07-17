@@ -1,11 +1,16 @@
 CREATE TABLE prescriptions (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     doctor_name VARCHAR(255),
+    doctor_bn_name VARCHAR(255) NOT NULL,
     doctor_email VARCHAR(255),
     doctor_degree VARCHAR(255),
+    doctor_bn_degree VARCHAR(255) NOT NULL,
     doctor_specialist VARCHAR(255),
+    doctor_bn_specialist VARCHAR(255) NOT NULL,
     doctor_institute VARCHAR(255),
+    doctor_bn_institute VARCHAR(255) NOT NULL,
     doctor_license VARCHAR(255),
+    doctor_bn_license VARCHAR(255) NOT NULL,
     patient_id VARCHAR(255),
     patient_name VARCHAR(255),
     patient_age VARCHAR(255),
@@ -20,4 +25,5 @@ CREATE TABLE prescriptions (
     tests TEXT,
     next_meet VARCHAR(255),
     date DATETIME
+    doctor_bn_visiting_time VARCHAR(255) NOT NULL
 );

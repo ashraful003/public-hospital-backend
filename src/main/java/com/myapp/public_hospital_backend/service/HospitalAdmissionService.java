@@ -14,10 +14,11 @@ import java.util.List;
 public class HospitalAdmissionService {
     private final HospitalAdmissionRepository hospitalAdmissionRepository;
     private final SeatRepository seatRepository;
-
-    public HospitalAdmissionService(HospitalAdmissionRepository hospitalAdmissionRepository, SeatRepository seatRepository) {
+    private final InpatientBillService inpatientBillService;
+    public HospitalAdmissionService(HospitalAdmissionRepository hospitalAdmissionRepository, SeatRepository seatRepository, InpatientBillService inpatientBillService) {
         this.hospitalAdmissionRepository = hospitalAdmissionRepository;
         this.seatRepository = seatRepository;
+        this.inpatientBillService = inpatientBillService;
     }
 
     public String admitPatient(HospitalAdmissionRequest request) {
@@ -55,6 +56,7 @@ public class HospitalAdmissionService {
         hospitalAdmissionRepository.save(admission);
         seat.setStatus(false);
         seatRepository.save(seat);
+        inpatientBillService.generateBillForAdmission(admission, seat);
         return "Patient admitted successfully";
     }
 
